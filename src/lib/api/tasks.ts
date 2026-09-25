@@ -74,9 +74,10 @@ export function addDependency(id: string, dependsOnTaskId: string) {
   return apiClient.post(`/tasks/${id}/dependencies`, { dependsOnTaskId }).then((r) => r.data);
 }
 
+// The history is a list like any other: newest first, and 100 is the most the API returns per page.
 export function listAuditLogs(id: string) {
   return apiClient
-    .get<{ entries: AuditLogEntry[] }>(`/tasks/${id}/audit-logs`)
+    .get<PaginatedResult<AuditLogEntry>>(`/tasks/${id}/audit-logs`, { params: { rows: 100 } })
     .then((r) => r.data.entries);
 }
 

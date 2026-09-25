@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import type { TaskStatus, User } from '@/types';
 import { CreateProjectDialog } from './create-project-dialog';
 import { CreateTaskDialog } from './create-task-dialog';
+import { ManageProjectDialog } from './manage-project-dialog';
 import { type InternalTask, TaskCard } from './task-card';
 import { TaskDetailDialog } from './task-detail-dialog';
 
@@ -96,9 +97,12 @@ export function TaskBoard({ currentUser }: { currentUser: User }) {
             </Select>
           )}
           {isPm && activeProjectId && (
+            <ManageProjectDialog projectId={activeProjectId} triggerClassName="w-full sm:w-auto" />
+          )}
+          {isPm && activeProjectId && (
             <CreateTaskDialog projectId={activeProjectId} triggerClassName="w-full sm:w-auto" />
           )}
-          {isPm && <CreateProjectDialog triggerClassName="w-full sm:w-auto" />}
+          {isPm && <CreateProjectDialog triggerClassName="w-full sm:w-auto max-sm:col-span-2" />}
         </div>
       </div>
 
