@@ -111,7 +111,7 @@ Tasks carry a `version`. Status changes, edits and deletes send the version they
 
 ### Roles
 
-`src/app/dashboard/page.tsx` renders `ClientProjectView` for Client Guests and `TaskBoard` for everyone else. A PM creates projects (with members) and tasks (department, assignee, dependencies, client visibility), edits or deletes a task in the detail dialog, and can share a comment with the client. Internal Team members use the same board to start and complete tasks in their own department, add comments (always internal) and attachment links, and read the task history. Client Guests are read-only. The Start/Complete button on a card (`getActionState` in `src/components/dashboard/task-card.tsx`) is disabled, with the reason as a tooltip, when the task is blocked by a dependency (Start only), the viewer's department differs from the task's, the task is assigned to someone else, or a PM tries to complete it. The API validates every transition itself, so these checks are hints, not enforcement.
+`src/app/dashboard/page.tsx` renders `ClientProjectView` for Client Guests and `TaskBoard` for everyone else. A PM creates projects (with members) and tasks (department, assignee, dependencies, client visibility), renames a project and adds or removes its members in `src/components/dashboard/manage-project-dialog.tsx`, edits or deletes a task in the detail dialog, and can share a comment with the client. Internal Team members use the same board to start and complete tasks in their own department, add comments (always internal) and attachment links, and read the task history. Client Guests are read-only. The Start/Complete button on a card (`getActionState` in `src/components/dashboard/task-card.tsx`) is disabled, with the reason as a tooltip, when the task is blocked by a dependency (Start only), the viewer's department differs from the task's, the task is assigned to someone else, or a PM tries to complete it. The API validates every transition itself, so these checks are hints, not enforcement.
 
 ### Client Guest view
 
@@ -162,7 +162,7 @@ The frontend runs on Vercel (Hobby plan) at https://nodewave-project-tracker-fro
 
 - Attachments are links (file name and URL). Files cannot be uploaded.
 - The board and the Client Guest view request at most 100 tasks per project (`rows: 100`) and have no pagination, search or filter controls. The project list is capped at 50 and the user list at 200 (`src/lib/api/projects.ts`, `src/lib/api/users.ts`).
-- Dependencies can only be set when a task is created. `addDependency` (with `useAddDependency`) and `deleteProject` exist in the API layer, but no screen uses them. The backend has no endpoint to edit a project or its members.
+- Dependencies can only be set when a task is created. `addDependency` (with `useAddDependency`) and `deleteProject` exist in the API layer, but no screen uses them.
 - Logout is client-side. `POST /auth/logout` returns a message and does not invalidate the JWT, which stays valid until it expires.
 - No daily standup summary view.
 
