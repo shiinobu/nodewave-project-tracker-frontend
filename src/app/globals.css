@@ -1,26 +1,154 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-plex-mono);
+  --font-heading: var(--font-sora);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-blocked: var(--blocked);
+  --color-blocked-soft: var(--blocked-soft);
+  --color-blocked-foreground: var(--blocked-foreground);
+  --color-dept-uiux: var(--dept-uiux);
+  --color-dept-uiux-soft: var(--dept-uiux-soft);
+  --color-dept-frontend: var(--dept-frontend);
+  --color-dept-frontend-soft: var(--dept-frontend-soft);
+  --color-dept-backend: var(--dept-backend);
+  --color-dept-backend-soft: var(--dept-backend-soft);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* "Ocean" palette: deep navy surfaces, aqua as the single brand color. The app is
+   dark-only, so <html> carries the `dark` class permanently (see layout.tsx) to keep
+   shadcn's `dark:` variants active. */
+:root {
+  color-scheme: dark;
+  --background: #0b1220;
+  --foreground: #edf5ff;
+  --card: #0e1727;
+  --card-foreground: #edf5ff;
+  --popover: #111c30;
+  --popover-foreground: #edf5ff;
+  --primary: #45c7d9;
+  --primary-foreground: #08111f;
+  --secondary: #162337;
+  --secondary-foreground: #b5c4d6;
+  --muted: #101a2d;
+  --muted-foreground: #8fa3bb;
+  --accent: #183844;
+  --accent-foreground: #45c7d9;
+  --destructive: #e66a78;
+  --border: #263651;
+  --input: #263651;
+  --ring: #45c7d9;
+  --chart-1: #45c7d9;
+  --chart-2: #64d39b;
+  --chart-3: #f1bd58;
+  --chart-4: #c787e5;
+  --chart-5: #e66a78;
+  --radius: 0.625rem;
+  --sidebar: #0e1727;
+  --sidebar-foreground: #edf5ff;
+  --sidebar-primary: #45c7d9;
+  --sidebar-primary-foreground: #08111f;
+  --sidebar-accent: #183844;
+  --sidebar-accent-foreground: #45c7d9;
+  --sidebar-border: #263651;
+  --sidebar-ring: #45c7d9;
+
+  --success: #64d39b;
+  --warning: #f1bd58;
+  --warning-foreground: #1c1a16;
+  --blocked: #e66a78;
+  --blocked-soft: #3c2029;
+  --blocked-foreground: #f18b95;
+  --dept-uiux: #c787e5;
+  --dept-uiux-soft: #32253d;
+  --dept-frontend: #45c7d9;
+  --dept-frontend-soft: #193846;
+  --dept-backend: #64d39b;
+  --dept-backend-soft: #18372f;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--muted-foreground) 40%, transparent) transparent;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+  }
+  /* Tailwind v4 no longer gives buttons a pointer cursor, so every clickable control opts in here. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  [role="combobox"],
+  [role="option"],
+  [role="checkbox"],
+  [role="switch"],
+  [role="menuitem"],
+  label[for],
+  label:has(input[type="checkbox"], [role="checkbox"]),
+  select,
+  summary,
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: pointer;
+  }
+  :is(button, input, select, textarea)[disabled],
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
 }
