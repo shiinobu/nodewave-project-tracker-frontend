@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Settings2, UserMinus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +50,55 @@ function memberLabel(user: ProjectMember['user']) {
   return user.department ? DEPARTMENT_STYLES[user.department].label : 'Internal Team';
 }
 
+/**
+ * Mounted only once the project has loaded, so the fields start from the real values. Resetting a
+ * form that was mounted empty misses the fields under the React Compiler, so it is keyed by the
+ * saved values instead and remounts with the new ones after a save.
+ */
+function ProjectForm({
+  project,
+  saving,
+  onSave,
+}: {
+  project: Project;
+  saving: boolean;
+  onSave: (input: { name: string; description: string }) => void;
+}) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { name: project.name, description: project.description ?? '' },
+  });
+
+  return (
+    <form
+      onSubmit={handleSubmit((values) =>
+        onSave({ name: values.name, description: values.description ?? '' }),
+      )}
+      noValidate
+      className="space-y-4"
+    >
+      <div className="space-y-2">
+        <Label htmlFor="manage-project-name">Name</Label>
+        <Input id="manage-project-name" {...register('name')} />
+        {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="manage-project-description">Description</Label>
+        <Textarea id="manage-project-description" rows={3} {...register('description')} />
+      </div>
+      <div className="flex justify-end">
+        <Button type="submit" disabled={!isDirty || saving}>
+          {saving ? 'Saving…' : 'Save changes'}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 /** PM-only: rename the project and decide who can see it. */
 export function ManageProjectDialog({
   projectId,
@@ -74,21 +123,6 @@ export function ManageProjectDialog({
     (user) => user.role !== 'PM' && !memberIds.has(user.id),
   );
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isDirty },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
-
-  useEffect(() => {
-    if (details) reset({ name: details.name, description: details.description ?? '' });
-  }, [details, reset]);
-
-  function onSave(values: FormValues) {
-    updateProject.mutate({ name: values.name, description: values.description ?? '' });
-  }
-
   function onAdd() {
     if (!selectedUserId) return;
     addMember.mutate(selectedUserId, { onSuccess: () => setSelectedUserId(undefined) });
@@ -108,22 +142,16 @@ export function ManageProjectDialog({
           <DialogDescription>Rename the project and choose who can see it.</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSave)} noValidate className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="manage-project-name">Name</Label>
-            <Input id="manage-project-name" {...register('name')} />
-            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="manage-project-description">Description</Label>
-            <Textarea id="manage-project-description" rows={3} {...register('description')} />
-          </div>
-          <div className="flex justify-end">
-            <Button type="submit" disabled={!isDirty || updateProject.isPending}>
-              {updateProject.isPending ? 'Saving…' : 'Save changes'}
-            </Button>
-          </div>
-        </form>
+        {details ? (
+          <ProjectForm
+            key={`${details.name}|${details.description ?? ''}`}
+            project={details}
+            saving={updateProject.isPending}
+            onSave={(input) => updateProject.mutate(input)}
+          />
+        ) : (
+          <Skeleton className="h-44 w-full" />
+        )}
 
         <Separator />
 
