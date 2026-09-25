@@ -2,7 +2,7 @@
 
 <div align="justify">
 
-Frontend for the NodeWave project tracker, written for the NodeWave Fullstack Engineer technical test. Product Managers and Internal Team members work on a task board, and Client Guests get a read-only progress view of the tasks shared with them. The app calls the REST API in [nodewave-project-tracker-backend](https://github.com/shiinobu/nodewave-project-tracker-backend) from the browser. Every page is a client component, there are no Server Actions or route handlers, and the app has no database of its own.
+Frontend for the NodeWave project tracker. Product Managers and Internal Team members work on a task board, and Client Guests get a read-only progress view of the tasks shared with them. The app calls the REST API in [nodewave-project-tracker-backend](https://github.com/shiinobu/nodewave-project-tracker-backend) from the browser. Every page is a client component, there are no Server Actions or route handlers, and the app has no database of its own.
 
 ## Stack
 
@@ -153,6 +153,10 @@ Husky installs two git hooks through the `prepare` script: `pre-commit` runs `bu
 3. `bun run typecheck`
 4. `bun run test`
 5. `bun run build`
+
+## Deployment
+
+The frontend runs on Vercel (Hobby plan) at https://nodewave-project-tracker-frontend.vercel.app, with `NEXT_PUBLIC_BE_URL` set to the backend origin, https://nodewave-project-tracker-backend.vercel.app. Next.js inlines that value at build time, so changing it needs a redeploy, and every push to `main` redeploys through the Vercel Git integration.
 
 ## Known limitations
 
